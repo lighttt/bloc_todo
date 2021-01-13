@@ -27,6 +27,7 @@ class HomeScreen extends StatelessWidget {
         },
         builder: (BuildContext context, todoList) {
           return ListView.builder(
+              key: Key("list_widget"),
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
               padding: const EdgeInsets.all(16),

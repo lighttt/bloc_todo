@@ -5,26 +5,45 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'package:bloc_todo/blocs/todo_bloc.dart';
+import 'package:bloc_todo/blocs/todo_event.dart';
+import 'package:bloc_todo/blocs/todo_observer.dart';
+import 'package:bloc_todo/models/todo.dart';
+import 'package:bloc_todo/screens/add_edit_screen.dart';
+import 'package:bloc_todo/screens/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:bloc_todo/main.dart';
+import 'package:mockito/mockito.dart';
+
+class MockTodoBloc extends Mock implements TodoBloc {}
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp());
+  Widget makeTestableWidget({Widget child, TodoBloc todoBloc}) {
+    return BlocProvider<TodoBloc>(
+      create: (BuildContext context) {
+        return todoBloc;
+      },
+      child: MaterialApp(
+        home: child,
+      ),
+    );
+  }
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  testWidgets(
+      'Given user enters fields, When user taps save, Then update todo list',
+      (WidgetTester tester) async {
+    // arrange
+    MockTodoBloc mockTodoBloc = MockTodoBloc();
+    Todo addTodo = Todo(title: "", description: "", id: "123");
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // act
+    AddEditScreen addEditScreen = AddEditScreen();
+    // assert
+    await tester.pumpWidget(
+        makeTestableWidget(child: addEditScreen, todoBloc: mockTodoBloc));
+    await tester.tap(find.byKey(Key("add_widget")));
+    verifyNever(mockTodoBloc.add(TodoEvent.add(addTodo)));
   });
 }

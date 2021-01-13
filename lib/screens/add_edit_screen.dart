@@ -1,5 +1,6 @@
 import 'package:bloc_todo/blocs/todo_bloc.dart';
 import 'package:bloc_todo/blocs/todo_event.dart';
+import 'package:bloc_todo/common/validator.dart';
 import 'package:bloc_todo/models/todo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -39,7 +40,12 @@ class _AddEditScreenState extends State<AddEditScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Add Todo"),
-        actions: [IconButton(icon: Icon(Icons.save), onPressed: _saveForm)],
+        actions: [
+          IconButton(
+              key: Key("add_widget"),
+              icon: Icon(Icons.save),
+              onPressed: _saveForm)
+        ],
       ),
       body: Form(
         key: _formKey,
@@ -51,9 +57,7 @@ class _AddEditScreenState extends State<AddEditScreen> {
               decoration: InputDecoration(
                 hintText: "Enter a title",
               ),
-              validator: (val) {
-                return val.trim().isEmpty ? "Title cannot be empty" : null;
-              },
+              validator: Validator.titleValidator,
               onSaved: (value) => _title = value,
             ),
             TextFormField(
@@ -62,11 +66,7 @@ class _AddEditScreenState extends State<AddEditScreen> {
               decoration: InputDecoration(
                 hintText: "Enter the description",
               ),
-              validator: (val) {
-                return val.trim().isEmpty
-                    ? "Description cannot be empty"
-                    : null;
-              },
+              validator: Validator.descriptionValidator,
               onSaved: (value) => _description = value,
             )
           ],
